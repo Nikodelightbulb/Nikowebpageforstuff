@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Desktop - World Machine Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            user-select: none;
+        }
+        
+        .pixel-font {
+            font-family: 'VT323', monospace;
+        }
+        
+        .xp-title-bar {
+            background: linear-gradient(to right, #4a148c 0%, #6a1b9a 50%, #4a148c 100%);
+            border-bottom: 1px solid #2d0b52;
+        }
+        
+        .xp-button {
+            background: linear-gradient(to bottom, #9c27b0 0%, #7b1fa2 50%, #6a1b9a 50%, #4a148c 100%);
+            border: 1px solid #2d0b52;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
+        }
+        
+        .xp-button:hover {
+            background: linear-gradient(to bottom, #ab47bc 0%, #8e24aa 50%, #7b1fa2 50%, #5e35b1 100%);
+        }
+        
+        .xp-button:active {
+            background: linear-gradient(to bottom, #4a148c 0%, #6a1b9a 50%, #7b1fa2 50%, #9c27b0 100%);
+        }
+        
+        .desktop-icon {
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            transition: transform 0.1s;
+        }
+        
+        .desktop-icon:hover {
+            transform: scale(1.05);
+        }
+        
+        .desktop-icon.selected {
+            background: rgba(155, 89, 182, 0.3);
+            border: 1px dotted #9b59b6;
+        }
+        
+        .window {
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5), 0 0 0 1px #2d0b52;
+            background: #1a1a2e;
+        }
+        
+        .taskbar {
+            background: linear-gradient(to bottom, #4a148c 0%, #380a5c 50%, #2d0b52 50%, #1a0b2e 100%);
+            border-top: 1px solid #6a1b9a;
+        }
+        
+        .start-button {
+            background: linear-gradient(to bottom, #00bfa5 0%, #00897b 50%, #00695c 50%, #004d40 100%);
+            border: 1px solid #003d33;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2), 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .start-button:hover {
+            background: linear-gradient(to bottom, #00e5bf 0%, #00a693 50%, #00897b 50%, #00695c 100%);
+        }
+        
+        .start-menu {
+            background: linear-gradient(to bottom, #2d0b52 0%, #1a0b2e 100%);
+            border: 1px solid #4a148c;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        }
+        
+        .desktop-grid {
+            background-image: 
+                radial-gradient(circle at 50% 50%, #2d1b4e 0%, #1a0b2e 100%);
+        }
+        
+        .scrollbar::-webkit-scrollbar {
+            width: 16px;
+            background: #1a0b2e;
+        }
+        
+        .scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(to right, #6a1b9a, #4a148c);
+            border: 1px solid #2d0b52;
+            box-shadow: inset 1px 1px 0 rgba(255,255,255,0.2);
+        }
+        
+        .scrollbar::-webkit-scrollbar-track {
+            background: #1a0b2e;
+            border-left: 1px solid #2d0b52;
+        }
+        
+        .content-area {
+            background: #0f0518;
+            border: 1px solid #4a148c;
+            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        @media (max-width: 768px) {
+            .window {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: calc(100% - 48px) !important;
+            }
+        }
+    </style>
+</head>
+<body class="h-screen w-screen overflow-hidden bg-[#1a0b2e] text-gray-200">
+
+    <!-- Desktop Area -->
+    <div id="desktop" class="desktop-grid h-full w-full relative p-4">
+        
+        <!-- Desktop Icons -->
+        <div class="flex flex-col gap-6 w-24">
+            <div class="desktop-icon flex flex-col items-center cursor-pointer p-2 rounded group" onclick="openWindow('computer')">
+                <div class="w-12 h-12 bg-purple-800 rounded-lg flex items-center justify-center shadow-lg border-2 border-purple-600 mb-1 group-hover:border-purple-400">
+                    <i data-lucide="monitor" class="w-8 h-8 text-cyan-300"></i>
+                </div>
+                <span class="text-xs text-center pixel-font text-purple-200 bg-black/50 px-1 rounded">My Computer</span>
+            </div>
+            
+            <div class="desktop-icon flex flex-col items-center cursor-pointer p-2 rounded group" onclick="openWindow('internet')">
+                <div class="w-12 h-12 bg-purple-800 rounded-lg flex items-center justify-center shadow-lg border-2 border-purple-600 mb-1 group-hover:border-purple-400">
+                    <i data-lucide="globe" class="w-8 h-8 text-cyan-300"></i>
+                </div>
+                <span class="text-xs text-center pixel-font text-purple-200 bg-black/50 px-1 rounded">The Internet</span>
+            </div>
+            
+            <div class="desktop-icon flex flex-col items-center cursor-pointer p-2 rounded group" onclick="openWindow('programs')">
+                <div class="w-12 h-12 bg-purple-800 rounded-lg flex items-center justify-center shadow-lg border-2 border-purple-600 mb-1 group-hover:border-purple-400">
+                    <i data-lucide="folder-open" class="w-8 h-8 text-cyan-300"></i>
+                </div>
+                <span class="text-xs text-center pixel-font text-purple-200 bg-black/50 px-1 rounded">Programs</span>
+            </div>
+            
+            <div class="desktop-icon flex flex-col items-center cursor-pointer p-2 rounded group" onclick="openWindow('notepad')">
+                <div class="w-12 h-12 bg-purple-800 rounded-lg flex items-center justify-center shadow-lg border-2 border-purple-600 mb-1 group-hover:border-purple-400">
+                    <i data-lucide="file-text" class="w-8 h-8 text-cyan-300"></i>
+                </div>
+                <span class="text-xs text-center pixel-font text-purple-200 bg-black/50 px-1 rounded">Notepad</span>
+            </div>
+        </div>
+
+        <!-- Windows Container -->
+        <div id="windows-container" class="absolute inset-0 pointer-events-none">
+            
+            <!-- My Computer Window -->
+            <div id="window-computer" class="window absolute hidden pointer-events-auto flex flex-col w-[600px] h-[400px] md:w-[700px] md:h-[500px] left-[150px] top-[50px]" style="z-index: 10;">
+                <div class="xp-title-bar h-8 flex items-center justify-between px-2 cursor-move" onmousedown="startDrag(event, 'window-computer')">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="monitor" class="w-4 h-4 text-cyan-300"></i>
+                        <span class="text-sm font-bold text-white shadow-black drop-shadow-md">My Computer</span>
+                    </div>
+                    <div class="flex gap-1">
+                        <button class="xp-button w-5 h-5 flex items-center justify-center text-white text-xs" onclick="minimizeWindow('computer')">_</button>
+                        <button class="xp-button w-5 h-5 flex items-center justify-center text-white text-xs" onclick="maximizeWindow('computer')">□</button>
+                        <button class="xp-button w-5 h-5 flex items-center justify-center text-white text-xs hover:bg-red-600" onclick="closeWindow('computer')">×</button>
+                    </div>
+                </div>
+                <div class="flex-1 bg-[#0f0518] p-4 overflow-auto scrollbar">
+                    <div class="content-area h-full p-4 text-purple-100">
+                        <h2 class="text-2xl pixel-font mb-4 text-cyan-300 border-b border-purple-700 pb-2">System Properties</h2>
+                        <div class="flex gap-4 mb-6">
+                            <div class="w-24 h-24 bg-purple-900 rounded-lg flex items-center justify-center border-2 border-purple-600">
+                                <i data-lucide="user" class="w-12 h-12 text-cyan-300"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-xl font-bold text-purple-300 mb-2">Developer Profile</h3>
+                                <p class="text-sm text-gray-300 mb-2">Full Stack Developer & World Machine Operator</p>
+                                <div class="flex gap-2 flex-wrap">
+                                    <span class="px-2 py-1 bg-purple-900 rounded text-xs border border-purple-600">JavaScript</span>
+                                    <span class="px-2 py-1 bg-purple-900 rounded text-xs border border-purple-600">React</span>
+                                    <span class="px-2 py-1 bg-purple-900 rounded text-xs border border-purple-600">Node.js</span>
+                                    <span class="px-2 py-1 bg-purple-900 rounded text-xs border border-purple-600">Python</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="text-purple-400">System:</span> Creative Problem Solver v2.4</p>
+                            <p><span class="text-purple-400">Memory:</span> Infinite curiosity, 16GB RAM</p>
+                            <p><span class="text-purple-400">Location:</span> The World Machine</p>
+                            <p class="mt-4 text-gray-400 italic">"I carry the sun in my pocket..."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Internet Window -->
+            <div id="window-internet" class="window absolute hidden pointer-events-auto flex flex-col w-[500px] h-[400px] md:w-[600px] md:h-[450px] left-[200px] top-[100px]" style="z-index: 10;">
+                <div class="xp-title-bar h-8 flex items-center justify-between px-2 cursor-move" onmousedown="startDrag(event, 'window-internet')">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="globe" class="w-4 h-4 text-cyan-300"></i>
+                        <span class="text-sm font-bold text-white shadow-black drop-shadow-md">The Internet - Network Connections</span>
+                    </div>
+                    <div class="flex gap-1">
+                        <button class="xp-button w-5 h-5 flex items-center justify-center text-white text-xs" onclick="minimizeWindow('internet')">_</button>
+                        <button class="xp-button w-5 h-5 flex items-center justify-center text-white text-xs" onclick="maximizeWindow('internet')">□</button>
+                        <button class="xp-button w-5 h-5 flex items-center justify-center text-white text-xs hover:bg-red-600" onclick="closeWindow('internet')">×</button>
+                    </div>
+                </div>
+                <div class="flex-1 bg-[#0f0518] p-4 overflow-auto scrollbar">
+                    <div class="content-area h-full p-4">
+                        <h2 class="text-2xl pixel-font mb-4 text-cyan-300 border-b border-purple-700 pb-2">Social Connections</h2>
+                        <div class="grid grid-cols-2 gap-4">
+                            <a href="https://github.com" target="_blank" class="flex items-center gap-3 p-3 bg-purple-900/50 rounded border border-purple-700 hover:bg-purple-800 hover:border-cyan-500 transition-colors group">
+                                <i data-lucide="github" class="w-8 h-8 text-gray-300 group-hover:text-white"></i>
+                                <div>
+                                    <div class="font-bold text-purple-200">GitHub</div>
+                                    <div class="text-xs text-purple-400">Code Repository</div>
+                                </div>
+                            </a>
+                            <a href="https://linkedin.com" target="_blank" class="flex items-center gap-3 p-3 bg-purple-900/50 rounded border border-purple-700 hover:bg-purple-800 hover:border-cyan-500 transition-colors group">
+                                <i data-lucide="linkedin" class="w-8 h-8 text-blue-400 group-hover:text-blue-300"></i>
+                                <div>
+                                    <div class="font-bold text-purple-200">LinkedIn</div>
+                                    <div class="text-xs text-purple-400">Professional Network</div>
+                                </div>
+                            </a>
+                            <a href="https://twitter.com" target="_blank" class="flex items-center gap-3 p-3 bg-purple-900/50 rounded border border-purple-700 hover:bg-purple-800 hover:border-cyan-500 transition-colors group">
+                                <i data-lucide="twitter" class="w-8 h-8 text-sky-400 group-hover:text-sky-300"></i>
+                                <div>
+                                    <div class="font-bold text-purple-200">Twitter</div>
+                                    <div class="text-xs text-purple-400">Thoughts & Updates</div>
+                                </div>
+                            </a>
+                            <a href="mailto:hello@example.com" class="flex items-center gap-3 p-3 bg-purple-900/50 rounded border border-purple-700 hover:bg-purple-800 hover:border-cyan-500 transition-colors group">
+                                <i data-lucide="mail" class="w-8 h-8 text-yellow-400 group-hover:text-yellow-300"></i>
+                                <div>
+                                    <div class="font-bold text-purple-200">Email</div>
+                                    <div class="text-xs text-purple-400">Direct Contact</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="mt-6 p-4 bg-black/30 rounded border border-purple-800">
+                            <p class="text-sm text-gray-400 italic text-center">"The World Machine connects us all..."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Programs Window -->
+            <div id="window-programs" class="window absolute hidden pointer-events-auto flex flex-col w-[700px] h-[500px] md:w-[800px] md:h-[600px] left-[100px] top-[20px]" style="z-index: 10;">
+                <div class="xp-title-bar h-8 flex items-center justify-between px-2 cursor-move" onmousedown="startDrag(event, 'window-programs')">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="folder-open" class="w-4 h-4 text-cyan-300"></i>
+                        <span class="text-sm font-bold text-white shadow-black drop-shadow-md">Programs - Project Explorer</span>
+                    </div>
+                    <div class="flex gap-1">
+                        <button class="xp-button w-5 h-5 flex items-center justify-center text-white text-xs" onclick="minimizeWindow('programs')">_</button>
+                        <button class="xp-button w-5 h-5 flex items-center justify-center text-white text-xs" onclick="maximizeWindow('programs')">□</button>
+                        <button class="xp-button w-5 h-5 flex items-center justify-center text-white text-xs hover:bg-red-600" onclick="closeWindow('programs')">×</button>
+                    </div>
+                </div>
+                <div class="flex-1 bg-[#0f0518] p-4 overflow-auto scrollbar">
+                    <div class="content-area h-full p-4">
+                        <h2 class="text-2xl pixel-font mb-4 text-cyan-300 border-b border-purple-700 pb-2">Installed Programs</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            
+                            <div class="bg-purple-900/30 border border-purple-700 rounded p-4 hover:border-cyan-500 transition-colors">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-bold text-purple-200">E-commerce Platform</h3>
+                                    <span class="text-xs bg-green-900 text-green-300 px-2 py-1 rounded">Active</span>
+                                </div>
+                                <p class="text-sm text-gray-400 mb-3">Full-stack shopping platform with real-time inventory</p>
+                                <div class="flex gap-2 flex-wrap mb-3">
+                                    <span class="text-xs bg-purple-950 px-2 py-1 rounded text-purple-300">React</span>
+                                    <span class="text-xs bg-purple-950 px-2 py-1 rounded text-purple-300">Node.js</span>
+                                    <span class="text-xs bg-purple-950 px-2 py-1 rounded text-purple-300">MongoDB</span>
+                                </div>
+                                <a href="#" class="text-sm text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
+                                    <span>View Project</span>
+                                    <i data-lucide="external-link" class="w-3 h-3"></i>
+                                </a>
+                            </div>
+
+                            <div class="bg-purple-900/30 border border-purple-700 rounded p-4 hover:border-cyan-500 transition-colors">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-bold text-purple-200">Task Automation Bot</h3>
+                                    <span class="text-xs bg-blue-900 text-blue-300 px-2 py-1 rounded">Maintained</span>
+                                </div>
+                                <p class="text-sm text-gray-400 mb-3">Discord bot for community management and automation</p>
+                                <div class="flex gap-2 flex-wrap mb-3">
+                                    <span class="text-xs bg-purple-950 px-2 py-1 rounded text-purple-300">Python</span>
+                                    <span class="text-xs bg-purple-950 px-2 py-1 rounded text-purple-300">Discord.js</span>
+                                </div>
+                                <a href="#" class="text-sm text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
+                                    <span>View Project</span>
+                                    <i data-lucide="external-link" class="w-3 h-3"></i>
+                                </a>
+                            </div>
+
+                            <div class="bg-purple-900/30 border border-purple-700 rounded p-4 hover:border-cyan-500 transition-colors">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-bold text-purple-200">Portfolio Generator</h3>
+                                    <span class="text-xs bg-purple-900 text-purple-300 px-2 py-1 rounded">Beta</span>
+                                </div>
+                                <p class="text-sm text-gray-400 mb-3">Static site generator for developer portfolios</p>
+                                <div class="flex gap-2 flex-wrap mb-3">
+                                    <span class="text-xs bg-purple-950 px-2 py-1 rounded text-purple-300">Next.js</span>
+                                    <span class="text-xs bg-purple-950 px-2 py-1 rounded text-purple-300">Tailwind</span>
+                                </div>
+                                <a href="#" class="text-sm text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
+                                    <span>View Project</span>
+                                    <i data-lucide="external-link" class="w-3 h-3"></i>
+                                </a>
+                            </div>
+
+                            <div class="bg-purple-900/30 border border-purple-700 rounded p-4 hover:border-cyan-500 transition-colors">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-bold text-purple-200">Data Visualization</h3>
+                                    <span class="text-xs bg-green-900 text-green-300 px-2 py-1 rounded">Complete</span>
+                                </div>
+                                <p class="text-sm text-gray-400 mb-3">Interactive dashboard for complex dataset analysis</p>
+                                <div class="flex gap-2 flex-wrap mb-3">
+                                    <span class="text-xs bg-purple-950 px-2 py-1 rounded text-purple-300">D3.js</span>
+                                    <span class="text-xs bg-purple-950 px-2 py-1 rounded text-purple-300">Vue</span>
+                                </div>
+                                <a href="#" class="text-sm text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
+                                    <span>View Project</span>
+                                    <i data-lucide="external-link" class="w-3 h-3"></i>
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notepad Window -->
+            <div id="window-notepad" class="window absolute hidden pointer-events-auto flex flex-col w-[500px] h-[400px] md:w-[600px] md:h-[500px] left-[250px] top-[80px]" style="z-index: 10;">
+                <div class="xp-title-bar h-8 flex items-center justify-between px-2 cursor-move" onmousedown="startDrag(event, 'window-notepad')">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="file-text" class="w-4 h-4 text-cyan-300"></i>
+                        <span class="text-sm font-bold text-white shadow-black drop-shadow-md">Notepad - Updates.txt</span>
+                    </div>
+                    <div class="flex gap-1">
+                        <button class="xp-button w-5 h-5 flex items-center justify-center text-white text-xs" onclick="minimizeWindow('notepad')">_</button>
+                        <button class="xp-button w-5 h-5 flex items-center justify-center text-white text-xs" onclick="maximizeWindow('notepad')">□</button>
+                        <button class="xp-button w-5 h-5 flex items-center justify-center text-white text-xs hover:bg-red-600" onclick="closeWindow('notepad')">×</button>
+                    </div>
+                </div>
+                <div class="flex-1 bg-[#0f0518] p-1 overflow-auto scrollbar">
+                    <div class="content-area h-full bg-[#fffef0] text-gray-800 font-mono text-sm p-4 overflow-auto">
+                        <div class="mb-4 border-b border-gray-400 pb-2">
+                            <h3 class="font-bold text-lg mb-1">Developer Log</h3>
+                            <p class="text-xs text-gray-600">Last updated: <span id="last-updated">2024-01-15</span></p>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <article class="border-l-4 border-purple-600 pl-3">
+                                <div class="font-bold text-purple-900">2024.01.15 - New Release</div>
+                                <p class="mt-1 text-gray-700">Launched the new portfolio design with World Machine aesthetics. Added drag-and-drop window functionality and improved mobile responsiveness.</p>
+                            </article>
+                            
+                            <article class="border-l-4 border-cyan-600 pl-3">
+                                <div class="font-bold text-cyan-900">2024.01.10 - System Update</div>
+                                <p class="mt-1 text-gray-700">Updated all project dependencies. Working on a new automation tool for workflow optimization.</p>
+                            </article>
+                            
+                            <article class="border-l-4 border-green-600 pl-3">
+                                <div class="font-bold text-green-900">2023.12.28 - Year End Review</div>
+                                <p class="mt-1 text-gray-700">Completed 12 major projects this year. Currently learning Rust and WebAssembly for better performance.</p>
+                            </article>
+                            
+                            <article class="border-l-4 border-yellow-600 pl-3">
+                                <div class="font-bold text-yellow-900">2023.12.15 - Bug Fixes</div>
+                                <p class="mt-1 text-gray-700">Fixed critical issues in the e-commerce platform. Improved database query performance by 40%.</p>
+                            </article>
+                        </div>
+                        
+                        <div class="mt-6 pt-4 border-t border-gray-400 text-center text-xs text-gray-500 italic">
+                            "The sun is safe in your hands..."
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Start Menu (Hidden by default) -->
+        <div id="start-menu" class="start-menu absolute bottom-12 left-0 w-64 hidden flex-col rounded-tr-lg overflow-hidden" style="z-index: 100;">
+            <div class="bg-gradient-to-r from-purple-900 to-purple-800 p-3 flex items-center gap-3 border-b border-purple-700">
+                <div class="w-10 h-10 bg-purple-950 rounded-full flex items-center justify-center border-2 border-cyan-400">
+                    <i data-lucide="user" class="w-6 h-6 text-cyan-300"></i>
+                </div>
+                <div>
+                    <div class="text-white font-bold text-sm">Developer</div>
+                    <div class="text-purple-300 text-xs">World Machine User</div>
+                </div>
+            </div>
+            <div class="p-2 space-y-1">
+                <button onclick="openWindow('computer'); toggleStartMenu()" class="w-full text-left px-3 py-2 hover:bg-purple-800/50 rounded flex items-center gap-2 text-sm text-purple-200 hover:text-white transition-colors">
+                    <i data-lucide="monitor" class="w-4 h-4"></i>
+                    My Computer
+                </button>
+                <button onclick="openWindow('internet'); toggleStartMenu()" class="w-full text-left px-3 py-2 hover:bg-purple-800/50 rounded flex items-center gap-2 text-sm text-purple-200 hover:text-white transition-colors">
+                    <i data-lucide="globe" class="w-4 h-4"></i>
+                    The Internet
+                </button>
+                <button onclick="openWindow('programs'); toggleStartMenu()" class="w-full text-left px-3 py-2 hover:bg-purple-800/50 rounded flex items-center gap-2 text-sm text-purple-200 hover:text-white transition-colors">
+                    <i data-lucide="folder-open" class="w-4 h-4"></i>
+                    Programs
+                </button>
+                <button onclick="openWindow('notepad'); toggleStartMenu()" class="w-full text-left px-3 py-2 hover:bg-purple-800/50 rounded flex items-center gap-2 text-sm text-purple-200 hover:text-white transition-colors">
+                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                    Notepad
+                </button>
+                <div class="border-t border-purple-800 my-2"></div>
+                <button onclick="alert('Shutting down... Just kidding!')" class="w-full text-left px-3 py-2 hover:bg-red-900/50 rounded flex items-center gap-2 text-sm text-red-300 hover:text-red-200 transition-colors">
+                    <i data-lucide="power" class="w-4 h-4"></i>
+                    Shut Down
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div class="taskbar fixed bottom-0 left-0 right-0 h-12 flex items-center px-2 gap-2 z-50">
+        <button id="start-btn" class="start-button h-9 px-4 rounded flex items-center gap-2 font-bold text-white text-sm shadow-lg" onclick="toggleStartMenu()">
+            <i data-lucide="sun" class="w-5 h-5"></i>
+            <span class="pixel-font text-lg">Start</span>
+        </button>
+        
+        <div class="h-8 w-px bg-purple-800 mx-1"></div>
+        
+        <div id="taskbar-items" class="flex-1 flex gap-1 overflow-hidden">
+            <!-- Active windows will appear here -->
+        </div>
+        
+        <div class="flex items-center gap-3 px-3 py-1 bg-purple-950/50 rounded border border-purple-800/50">
+            <div class="flex flex-col items-end">
+                <div id="clock-time" class="text-xs font-bold text-cyan-300 pixel-font">12:00 PM</div>
+                <div id="clock-date" class="text-[10px] text-purple-300">2024-01-15</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Window management
+        let activeWindows = {};
+        let zIndexCounter = 10;
+        let draggedWindow = null;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+
+        function openWindow(windowName) {
+            const windowEl = document.getElementById(`window-${windowName}`);
+            if (!windowEl) return;
+            
+            windowEl.classList.remove('hidden');
+            windowEl.style.zIndex = ++zIndexCounter;
+            activeWindows[windowName] = true;
+            updateTaskbar();
+            
+            // Center on mobile
+            if (window.innerWidth < 768) {
+                windowEl.style.left = '0px';
+                windowEl.style.top = '0px';
+                windowEl.style.width = '100%';
+                windowEl.style.height = 'calc(100% - 48px)';
+            }
+        }
+
+        function closeWindow(windowName) {
+            const windowEl = document.getElementById(`window-${windowName}`);
+            if (windowEl) {
+                windowEl.classList.add('hidden');
+                delete activeWindows[windowName];
+                updateTaskbar();
+            }
+        }
+
+        function minimizeWindow(windowName) {
+            const windowEl = document.getElementById(`window-${windowName}`);
+            if (windowEl) {
+                windowEl.classList.add('hidden');
+                // Keep in activeWindows but minimized
+                updateTaskbar();
+            }
+        }
+
+        function maximizeWindow(windowName) {
+            const windowEl = document.getElementById(`window-${windowName}`);
+            if (!windowEl) return;
+            
+            if (windowEl.dataset.maximized === "true") {
+                // Restore
+                windowEl.style.width = windowEl.dataset.prevWidth || '600px';
+                windowEl.style.height = windowEl.dataset.prevHeight || '400px';
+                windowEl.style.left = windowEl.dataset.prevLeft || '100px';
+                windowEl.style.top = windowEl.dataset.prevTop || '50px';
+                windowEl.dataset.maximized = "false";
+            } else {
+                // Maximize
+                windowEl.dataset.prevWidth = windowEl.style.width;
+                windowEl.dataset.prevHeight = windowEl.style.height;
+                windowEl.dataset.prevLeft = windowEl.style.left;
+                windowEl.dataset.prevTop = windowEl.style.top;
+                windowEl.style.width = '100%';
+                windowEl.style.height = 'calc(100% - 48px)';
+                windowEl.style.left = '0';
+                windowEl.style.top = '0';
+                windowEl.dataset.maximized = "true";
+            }
+        }
+
+        function updateTaskbar() {
+            const container = document.getElementById('taskbar-items');
+            container.innerHTML = '';
+            
+            Object.keys(activeWindows).forEach(windowName => {
+                const btn = document.createElement('button');
+                btn.className = 'h-8 px-3 bg-purple-800/50 hover:bg-purple-700 border border-purple-600 rounded flex items-center gap-2 text-xs text-white transition-colors max-w-[150px] truncate';
+                
+                const icons = {
+                    computer: 'monitor',
+                    internet: 'globe',
+                    programs: 'folder-open',
+                    notepad: 'file-text'
+                };
+                
+                btn.innerHTML = `<i data-lucide="${icons[windowName]}" class="w-4 h-4"></i><span class="capitalize">${windowName}</span>`;
+                btn.onclick = () => {
+                    const win = document.getElementById(`window-${windowName}`);
+                    if (win.classList.contains('hidden')) {
+                        win.classList.remove('hidden');
+                        win.style.zIndex = ++zIndexCounter;
+                    } else if (win.style.zIndex == zIndexCounter) {
+                        win.classList.add('hidden');
+                    } else {
+                        win.style.zIndex = ++zIndexCounter;
+                    }
+                };
+                container.appendChild(btn);
+            });
+            
+            lucide.createIcons();
+        }
+
+        function toggleStartMenu() {
+            const menu = document.getElementById('start-menu');
+            menu.classList.toggle('hidden');
+            menu.classList.toggle('flex');
+        }
+
+        // Drag functionality
+        function startDrag(e, windowId) {
+            if (e.target.tagName === 'BUTTON') return;
+            
+            const windowEl = document.getElementById(windowId);
+            if (windowEl.dataset.maximized === "true") return;
+            
+            draggedWindow = windowEl;
+            const rect = windowEl.getBoundingClientRect();
+            dragOffsetX = e.clientX - rect.left;
+            dragOffsetY = e.clientY - rect.top;
+            
+            windowEl.style.zIndex = ++zIndexCounter;
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            if (draggedWindow) {
+                e.preventDefault();
+                let x = e.clientX - dragOffsetX;
+                let y = e.clientY - dragOffsetY;
+                
+                // Boundaries
+                x = Math.max(0, Math.min(x, window.innerWidth - draggedWindow.offsetWidth));
+                y = Math.max(0, Math.min(y, window.innerHeight - draggedWindow.offsetHeight - 48));
+                
+                draggedWindow.style.left = x + 'px';
+                draggedWindow.style.top = y + 'px';
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            draggedWindow = null;
+        });
+
+        // Close start menu when clicking outside
+        document.addEventListener('click', (e) => {
+            const startMenu = document.getElementById('start-menu');
+            const startBtn = document.getElementById('start-btn');
+            if (!startMenu.contains(e.target) && !startBtn.contains(e.target)) {
+                startMenu.classList.add('hidden');
+                startMenu.classList.remove('flex');
+            }
+        });
+
+        // Clock functionality
+        function updateClock() {
+            const now = new Date();
+            const timeEl = document.getElementById('clock-time');
+            const dateEl = document.getElementById('clock-date');
+            
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours % 12 || 12;
+            
+            timeEl.textContent = `${displayHours}:${minutes} ${ampm}`;
+            dateEl.textContent = now.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            
+            document.getElementById('last-updated').textContent = now.toLocaleDateString('en-CA');
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Desktop icon selection
+        document.querySelectorAll('.desktop-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                document.querySelectorAll('.desktop-icon').forEach(i => i.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        // Click desktop to deselect
+        document.getElementById('desktop').addEventListener('click', (e) => {
+            if (e.target.id === 'desktop') {
+                document.querySelectorAll('.desktop-icon').forEach(i => i.classList.remove('selected'));
+            }
+        });
+    </script>
+<script src="https://deepsite.hf.co/deepsite-badge.js"></script>
+</body>
+</html>
